@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Stopwatch</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="border">
+        <div class="container">
+            <div class="timerDisplay" id="timerDisplay">
+                00 : 00 : 00 : 000
+            </div>
+            <div class="buttons">
+                <button id="resetTimer" class="hidden">Reset</button>
+                <button id="playTimer">Play</button>
+                <button id="lapTimer" class="hidden">Lap</button>
+            </div>
+        </div>
+    </div>
+    <br>
+    <hr>
+
+    <ul class="laps">
+    </ul>
+    
+   
+    <script>
+        const playButton = document.getElementById("playTimer");
+        const lapButton = document.getElementById("lapTimer");
+        const resetButton = document.getElementById("resetTimer");
+        const timerDisplay = document.getElementById("timerDisplay");
+        const lapsContainer = document.querySelector(".laps");
+
+
+        let isPlay = false;
+        let milliseconds = 0;
+        let interval;
+        let lapCounter = 1;
+
+        const updateTime = () => {
+            const hrs = Math.floor(milliseconds / 3600000);
+            const mins = Math.floor((milliseconds % 3600000) / 60000);
+            const secs = Math.floor((milliseconds % 60000) / 1000);
+            const millis = milliseconds % 1000;
+            timerDisplay.textContent = `${String(hrs).padStart(2, '0')} : ${String(mins).padStart(2, '0')} : ${String(secs).padStart(2, '0')} : ${String(millis).padStart(3, '0')}`;
+        };
+
+        const toggleButton = () => {
+            lapButton.classList.toggle("hidden");
+            resetButton.classList.toggle("hidden");
+        };
+
+        const play = () => {
+            if (isPlay) {
+                playButton.innerHTML = 'Play';
+                clearInterval(interval);
+            } else {
+                playButton.innerHTML = 'Pause';
+                interval = setInterval(() => {
+                    milliseconds += 10;
+                    updateTime();
+                }, 10);
+            }
+            isPlay = !isPlay;
+            toggleButton();
+        };
+
+        const reset = () => {
+            playButton.innerHTML = 'Play';
+            isPlay = false;
+            clearInterval(interval);
+            milliseconds = 0;
+            updateTime();
+            lapButton.classList.add("hidden");
+            resetButton.classList.add("hidden");
+            lapsContainer.innerHTML = ''; 
+            lapCounter = 1;
+        };
+
+        const addLap = () => {
+            const lapItem = document.createElement("li");
+            lapItem.className = "lap-item";
+            lapItem.innerHTML = `<span class="number">#${lapCounter}</span><span class="time-stamp">${timerDisplay.textContent}</span>`;
+            lapsContainer.appendChild(lapItem);
+            lapCounter++;
+        };
+
+        playButton.addEventListener("click", play);
+        resetButton.addEventListener("click", reset);
+        lapButton.addEventListener("click", addLap);
+
+        updateTime();
+    </script>
+
+</body>
+</html>
